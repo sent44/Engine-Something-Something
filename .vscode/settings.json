@@ -1,0 +1,16 @@
+{
+    "spellright.language": [
+        "en"
+    ],
+    "spellright.documentTypes": [
+        "markdown",
+        "latex",
+        "plaintext",
+        "nim"
+    ],
+    "spellright.parserByClass": {
+        "nim": {
+            "parser": "code"
+        }
+    }
+}

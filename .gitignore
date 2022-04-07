@@ -1,0 +1,9 @@
+#.vscode/
+
+nimcache/
+nimblecache/
+htmldocs/
+
+bin/
+
+**/*_old*.nim
