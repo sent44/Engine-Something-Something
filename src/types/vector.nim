@@ -44,16 +44,22 @@ func newVector*[N: static[int], T: SomeNumber](args: varargs[T]): Vector[N, T] =
 
 
 template newVector2*(): Vector = newVector[2, float]()
+template newVector2*(c: float): Vector = newVector[2, float](c)
 template newVector2*(x, y: float): Vector = newVector[2, float](x, y)
 template newVector2int*(): Vector = newVector[2, int]()
+template newVector2int*(c: int): Vector = newVector[2, int](c)
 template newVector2int*(x, y: int): Vector = newVector[2, int](x, y)
 template newVector3*(): Vector = newVector[3, float]()
+template newVector3*(c: float): Vector = newVector[3, float](c)
 template newVector3*(x, y, z: float): Vector = newVector[3, float](x, y, z)
 template newVector3int*(): Vector = newVector[3, int]()
+template newVector3int*(c: int): Vector = newVector[3, int](c)
 template newVector3int*(x, y, z: int): Vector = newVector[3, int](x, y, z)
 template newVector4*(): Vector = newVector[4, float]()
+template newVector4*(c: float): Vector = newVector[4, float](c)
 template newVector4*(x, y, z, w: float): Vector = newVector[4, float](x, y, z, w)
 template newVector4int*(): Vector = newVector[4, int]()
+template newVector4int*(c: int): Vector = newVector[4, int](c)
 template newVector4int*(x, y, z, w: int): Vector = newVector[4, int](x, y, z, w)
 
 ## Arithmetic Operations
@@ -153,7 +159,7 @@ when compileOption("assertions"):
     assert not (newVector2(4.0, 3.0) - newVector2(2.0, -1.0) != 2 * newVector2(1.0, 2.0))
     assert newVector[5, uint16]().toString == "Vector5uint16(0, 0, 0, 0, 0)"
     assert newVector2(1.0, 2.0) / newVector2(3.0, 3.0) != newVector2(0.333333, 0.666666)
-    assert newVector2(1.0, 2.0) / newVector2(3.0, 3.0) ==? newVector2(0.333333, 0.666666)
+    assert newVector2(1.0, 2.0) / 3.0 ==? newVector2(0.333333, 0.666666)
     assert newVector2(1.0, 2.0) / newVector2(3.0, 3.0) !=? newVector2(0.333333, 0.666677)
     assert newVector[8, float]() is VectorN
     assert newVector[7, float]() is Vector
@@ -162,3 +168,4 @@ when compileOption("assertions"):
     assert [3.2, 4.2, 6.2].toVector() == newVector3(3.2, 4.2, 6.2)
     assert newVector2int(3, 4).length == 5.0
     assert newVector2(3.0, 4.0).dot(newVector2(5.0, 6.0)) == 39.0
+    assert newVector2(1.0) == newVector2(1.0, 1.0)
