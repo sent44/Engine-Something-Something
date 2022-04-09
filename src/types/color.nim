@@ -26,7 +26,6 @@ func toString*[T](color: Color[T]): string =
         if i < 3:
             result &= ", "
     result &= ")"
-
 template `$`*[T](color: Color[T]): string = color.toString()
 
 echo newColor(1.2, 2.4, 3.6)

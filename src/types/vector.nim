@@ -1,6 +1,6 @@
 import std/typetraits
 import std/math
-import ../enginefunc
+
 
 type Vector*[N: static[int], T: SomeNumber] = object
     arr: array[N, T]
@@ -31,8 +31,6 @@ template `w=`*[N, T](vector: Vector[N, T], v: T): void = vector[3] = v
 
 
 func newVector*[N: static[int], T: SomeNumber](args: varargs[T]): Vector[N, T] =
-    if N < 2:
-        raise newException(CatchableError, "Too low")
     if args.len != 0 and args.len != 1 and N != args.len:
         raise newException(CatchableError, "Not match number")
     if args.len == 1:
@@ -89,13 +87,16 @@ template `*=`*(a: var Vector, b: SomeNumber): void = a = a * b
 func dot*[N, T](a, b: Vector[N, T]): T =
     for i in 0 ..< a.arr.len:
         result += a[i] * b[i]
-func cross*[N, T](a, b: Vector[N, T]): Vector[N, T] =
+# For cross product
+import matrix
+func angleTo*(a, b: Vector): float
+func cross*[N: static[int], T: SomeFloat](a, b: Vector[N, T]): Vector[N, T] =
     when N != 3 and N != 7:
         error "Only Vector3 and Vector7 can do cross"
     when N == 7:
-        error "Vector7 is not implement."
+        error "Vector7 is not implement"
     # TODO cross is still empty
-    newVector[3, T]()
+    newVector[3, T](a.y*b.z - a.z*b.y, a.z*b.x - a.x*b.z, a.x*b.y - a.y*b.x)
 
 func `/`*(a, b: Vector): Vector =
     for i in 0 ..< a.arr.len:
@@ -113,13 +114,13 @@ func `==`*(a, b: Vector): bool =
         if a[i] != b[i]:
             return false
     return true
-func isEqualApprox*[N: static[int], T: SomeFloat](a, b: Vector[N, T], tolerance: float = 0.000001): bool =
+func almostEqual*[N: static[int], T: SomeFloat](a, b: Vector[N, T], unitsInLastPlace: Natural = 4): bool =
     for i in 0 ..< a.arr.len:
-        if not a[i].isEqualApprox(b[i], tolerance):
+        if not a[i].almostEqual(b[i], unitsInLastPlace):
             return false
     return true
-template `==?`*[N: static[int], T: SomeFloat](a, b: Vector[N, T]): bool = a.isEqualApprox(b)
-template `!=?`*[N: static[int], T: SomeFloat](a, b: Vector[N, T]): bool = not a.isEqualApprox(b)
+template `==?`*[N: static[int], T: SomeFloat](a, b: Vector[N, T]): bool = a.almostEqual(b)
+template `!=?`*[N: static[int], T: SomeFloat](a, b: Vector[N, T]): bool = not a.almostEqual(b)
 
 
 ## Other Operations
@@ -138,6 +139,8 @@ func lengthSquared*(vector: Vector): float =
     for i in 0 ..< vector.arr.len:
         result += pow(float(vector[i]), 2.0)
 template length*(vector: Vector): float = sqrt(vector.lengthSquared)
+
+func angleTo*(a, b: Vector): float = arccos (a.dot b) / (a.length * b.length)
 
 func normalized*[N: static[int], T: SomeFloat](vector: Vector[N, T]): Vector[N, T] =
     let length = vector.length
