@@ -85,7 +85,11 @@ func `*`*[N, T](a: SomeNumber, b: Vector[N, T]): Vector[N, T] =
 func dot*[N, T](a, b: Vector[N, T]): T =
     for i in 0 ..< a.arr.len:
         result += a[i] * b[i]
-func cross*[T](a, b: Vector[3, T]): Vector[3, T] =
+func cross*[N, T](a, b: Vector[N, T]): Vector[N, T] =
+    when N != 3 and N != 7:
+        error "Only Vector3 and Vector7 can do cross"
+    when N == 7:
+        error "Vector7 is not implement."
     # TODO cross is still empty
     newVector[3, T]()
 
@@ -150,22 +154,3 @@ func toString*[N, T](vector: Vector[N, T]): string =
             result &= ", "
     result &= ")"
 template `$`*[N, T](vector: Vector[N, T]): string = vector.toString()
-
-
-## Unit tests
-when compileOption("assertions"):
-    assert newVector2(3.5, 4.5).toString == "Vector2(3.5, 4.5)"
-    assert newVector3(4.2, 5.3, -6.4).castTo(Vector4Int) == newVector4Int(4, 5, -6, 0)
-    assert not (newVector2(4.0, 3.0) - newVector2(2.0, -1.0) != 2 * newVector2(1.0, 2.0))
-    assert newVector[5, uint16]().toString == "Vector5uint16(0, 0, 0, 0, 0)"
-    assert newVector2(1.0, 2.0) / newVector2(3.0, 3.0) != newVector2(0.333333, 0.666666)
-    assert newVector2(1.0, 2.0) / 3.0 ==? newVector2(0.333333, 0.666666)
-    assert newVector2(1.0, 2.0) / newVector2(3.0, 3.0) !=? newVector2(0.333333, 0.666677)
-    assert newVector[8, float]() is VectorN
-    assert newVector[7, float]() is Vector
-    assert newVector3(1.0, 2.0, 3.0) is Vector
-    assert newVector4int(1, 2, 3 ,4) isnot Vector4
-    assert [3.2, 4.2, 6.2].toVector() == newVector3(3.2, 4.2, 6.2)
-    assert newVector2int(3, 4).length == 5.0
-    assert newVector2(3.0, 4.0).dot(newVector2(5.0, 6.0)) == 39.0
-    assert newVector2(1.0) == newVector2(1.0, 1.0)

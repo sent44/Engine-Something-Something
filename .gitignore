@@ -4,6 +4,13 @@ nimcache/
 nimblecache/
 htmldocs/
 
+tests/**/*.exe
+#!tests/**/*.nim
+testresults
+outputGotten.txt
+outputExpected.txt
+tests/megatest.nim
+
 bin/
 
 **/*_old*.nim

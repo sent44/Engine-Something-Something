@@ -1,6 +1,7 @@
 import sdl2
 # import std/macros
 
+import types/matrix
 
 proc main(): int =
   if not sdl2.init(INIT_VIDEO or INIT_TIMER or INIT_EVENTS):
@@ -31,7 +32,7 @@ proc main(): int =
   
 
 when isMainModule:
-  when defined(debug): echo "This is debugging" # Temporary line
+  when defined(debug): echo "This is debugging." # Temporary line
   
   quit main()
 

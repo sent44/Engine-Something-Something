@@ -15,3 +15,9 @@ namedBin["main"] = "engine"
 
 requires "nim >= 1.6.4"
 requires "sdl2 >= 2.0.1"
+
+
+task test, "": # Override default nimble test task
+    exec "testament category /"
+
+#include "config.nims"
