@@ -67,11 +67,13 @@ template `+`*(a: Vector): Vector = a
 func `+`*(a, b: Vector): Vector =
     for i in 0 ..< a.arr.len:
         result[i] = a[i] + b[i]
+template `+=`*(a: var Vector, b: Vector): void = a = a + b
 
 func `-`*(a: Vector): Vector =
     for i in 0 ..< a.arr.len:
         result[i] = -a[i]
 template `-`*(a, b: Vector): Vector = a + -b
+template `-=`*(a: var Vector, b: Vector): void = a = a - b
 
 func `*`*(a, b: Vector): Vector =
     for i in 0 ..< a.arr.len:
@@ -82,6 +84,8 @@ func `*`*[N, T](a: Vector[N, T], b: SomeNumber): Vector[N, T] =
 func `*`*[N, T](a: SomeNumber, b: Vector[N, T]): Vector[N, T] =
     for i in 0 ..< b.arr.len:
         result[i] = T(a) * b[i]
+template `*=`*(a: var Vector, b: Vector): void = a = a * b
+template `*=`*(a: var Vector, b: SomeNumber): void = a = a * b
 func dot*[N, T](a, b: Vector[N, T]): T =
     for i in 0 ..< a.arr.len:
         result += a[i] * b[i]
@@ -99,6 +103,8 @@ func `/`*(a, b: Vector): Vector =
 func `/`*[N, T](a: Vector[N, T], b: SomeNumber): Vector[N, T] =
     for i in 0 ..< a.arr.len:
         result[i] = a[i] / T(b)
+# template `/=`*(a: var Vector, b: Vector): void = a = a / b
+template `/=`*(a: var Vector, b: SomeNumber): void = a = a / b
 
 
 ## Compareation Operations
@@ -121,9 +127,9 @@ template `!=?`*[N: static[int], T: SomeFloat](a, b: Vector[N, T]): bool = not a.
 #     result.arr = arr
 func toVector*[N: static[int], T: SomeNumber](arr: array[N, T]): Vector[N, T] =
     result.arr = arr
-func castTo*(`from`: Vector, to_type: typedesc): to_type =
-    if to_type.genericHead isnot Vector.genericHead:
-        raise newException(CatchableError, "Error, cannot cast to non TypeVector.")
+func castTo*(`from`: Vector, toType: typedesc): toType =
+    if toType.genericHead isnot Vector.genericHead:
+        raise newException(CatchableError, "Error, cannot cast to non Vector.")
     for i in 0 ..< min(`from`.arr.len, result.arr.len):
         result[i] = type(result[0])(`from`[i])
 
@@ -132,7 +138,6 @@ func lengthSquared*(vector: Vector): float =
     for i in 0 ..< vector.arr.len:
         result += pow(float(vector[i]), 2.0)
 template length*(vector: Vector): float = sqrt(vector.lengthSquared)
-template len*(vector: Vector): float = vector.length
 
 func normalized*[N: static[int], T: SomeFloat](vector: Vector[N, T]): Vector[N, T] =
     let length = vector.length
@@ -153,4 +158,4 @@ func toString*[N, T](vector: Vector[N, T]): string =
         if i < N - 1:
             result &= ", "
     result &= ")"
-template `$`*[N, T](vector: Vector[N, T]): string = vector.toString()
+template `$`*(vector: Vector): string = vector.toString()

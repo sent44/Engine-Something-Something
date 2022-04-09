@@ -51,3 +51,5 @@ echo [3.2, 4.2, 6.2].toVector()
 
 echo newVector2int(3, 4).length
 echo newVector2(3.0, 4.0).dot(newVector2(5.0, 6.0))
+
+# TODO += -= x=*= /*

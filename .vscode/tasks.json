@@ -4,12 +4,16 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build",
+            "label": "Build and run current file",
             "type": "shell",
-            "command": "nimble",
+            "command": "nim",
             "args": [
-                "build",
-                "--define:debug"
+                "compile",
+                "--run",
+                "--define:debug",
+                "--hints:off",
+                "--out:${workspaceFolder}/bin/${fileBasenameNoExtension}",
+                "${file}"
             ],
             "group": {
                 "kind": "build",
@@ -17,29 +21,7 @@
             },
             "presentation": {
                 "echo": true,
-                "reveal": "never",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": true
-            }
-        },
-        {
-            "label": "Build and Run",
-            "type": "shell",
-            "command": "nimble",
-            "args": [
-                "build",
-                "--run",
-                "--define:debug"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "presentation": {
-                "echo": true,
-                "reveal": "never",
+                "reveal": "silent",
                 "focus": false,
                 "panel": "shared",
                 "showReuseMessage": false,
