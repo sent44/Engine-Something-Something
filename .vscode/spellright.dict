@@ -2,3 +2,16 @@ arr
 uint
 src
 nim
+dynlib
+mwindows
+Wl
+dynamicbase
+nxcompat
+va
+lm
+ldxguid
+lwinmm
+lsetupapi
+lversion
+luuid
+keydown

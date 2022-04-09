@@ -7,13 +7,17 @@
         "latex",
         "plaintext",
         "nim",
-        "nimble"
+        "nimble",
+        "nims"
     ],
     "spellright.parserByClass": {
         "nim": {
             "parser": "code"
         },
         "nimble": {
+            "parser": "code"
+        },
+        "nims": {
             "parser": "code"
         }
     },
