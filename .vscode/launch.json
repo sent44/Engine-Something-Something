@@ -5,15 +5,24 @@
     "version": "0.2.0",
     "configurations": [
         {
-            // "windows": {
-            //     "gdbpath": "C:/cygwin64/bin/gdb.exe"
-            // },
-            "name": "Debug",
+            "name": "Launch: GDB (Native Debug)",
             "type": "gdb",
             "request": "launch",
-            "target": "./bin/Engine",
+            "preLaunchTask": "Build for debug",
+            
+            "target": "./bin/engine",
             "cwd": "${workspaceRoot}",
             "valuesFormatting": "parseText"
+        },
+        {
+            "name": "Launch: LLDB (CodeLLDB)",
+            "type": "lldb",
+            "request": "launch",
+            "preLaunchTask": "Build for debug",
+
+            "program": "${workspaceFolder}/bin/engine",
+            "args": [],
+            "cwd": "${workspaceFolder}"
         }
     ]
 }

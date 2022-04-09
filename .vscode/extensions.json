@@ -1,7 +1,8 @@
 {
     "recommendations": [
-        "kosz78.nim",
-        "webfreak.debug",
-        "ban.spellright"
+        "ban.spellright",
+        "vadimcn.vscode-lldb",
+        "nimsaem.nimvscode",
+        "webfreak.debug"
     ]
 }

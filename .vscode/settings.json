@@ -6,11 +6,16 @@
         "markdown",
         "latex",
         "plaintext",
-        "nim"
+        "nim",
+        "nimble"
     ],
     "spellright.parserByClass": {
         "nim": {
             "parser": "code"
+        },
+        "nimble": {
+            "parser": "code"
         }
-    }
+    },
+    "spellright.notificationClass": "information"
 }

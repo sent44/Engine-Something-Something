@@ -4,17 +4,12 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build",
+            "label": "Build and Run",
             "type": "shell",
-            "command": "nim",
+            "command": "nimble",
             "args": [
-                "compile",
-                "--out:${workspaceFolder}/bin/Engine",
-                //"--run",
-                "--define:debug",
-                "--debugger:native",
-                "--showAllMismatches:on",
-                "${workspaceFolder}/src/main.nim"
+                "run",
+                "--define:debug"
             ],
             "group": {
                 "kind": "build",
@@ -22,10 +17,32 @@
             },
             "presentation": {
                 "echo": true,
-                "reveal": "silent",
+                "reveal": "never",
                 "focus": false,
                 "panel": "shared",
                 "showReuseMessage": false,
+                "clear": true
+            }
+        },
+        {
+            "label": "Build for debug",
+            "type": "shell",
+            "command": "nimble",
+            "args": [
+                "build",
+                "--debugger:native",
+                "--define:debug"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
                 "clear": true
             }
         }
