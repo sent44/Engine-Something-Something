@@ -2,7 +2,6 @@ import sdl2
 # import std/macros
 
 
-
 proc main(): int =
   if not sdl2.init(INIT_VIDEO or INIT_TIMER or INIT_EVENTS):
     sdl2.quit()
@@ -16,9 +15,8 @@ proc main(): int =
   var delta: float32
   var counter: uint64
   var previousCounter: uint64
-  
+
   while running:
-    echo "running"
     previousCounter = counter
     counter = getPerformanceCounter()
     delta = (counter - previousCounter).float / getPerformanceFrequency().float
