@@ -2,6 +2,7 @@ import std/typetraits
 
 import vector
 
+# [Column, Row, Type]
 type Matrix*[N: static[int], M: static[int], T: SomeNumber] = object
     vecs: array[M, Vector[N, T]]
 
@@ -12,9 +13,10 @@ type
     Matrix3int* = Matrix[3, 3, int]
     Matrix4* = Matrix[4, 4, float]
     Matrix4int* = Matrix[4, 4, int]
-
-    MatrixN*[N: static[int]] = Matrix[N, N, float]
-    MatrixNint*[N: static[int]] = Matrix[N, N, int]
+when defined(typeN):
+    type
+        MatrixN*[N: static[int]] = Matrix[N, N, float]
+        MatrixNint*[N: static[int]] = Matrix[N, N, int]
 
 
 template `[]`*[N, M, T](matrix: Matrix[N, M, T], m: int): Vector[N, T] = matrix.vecs[m] # Matrix[m, n]
@@ -42,6 +44,8 @@ template `-`*(a, b: Matrix): Matrix = a + -b
 template `-=`*(a: var Matrix, b: Matrix): void = a = a - b
 
 func dot*[N1, M1, N2, M2, T](a: Matrix[N1, M1, T], b: Matrix[N2, M2, T]): Matrix[N2, M1, T] =
+    if N1 != M2:
+        raise newException(CatchableError, "N1 != M2")
     for i in  0 ..< N2:
         for j in  0 ..< M1:
             result[j, i] = T(0)

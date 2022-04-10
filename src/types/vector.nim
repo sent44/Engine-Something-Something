@@ -12,9 +12,11 @@ type
     Vector3int* = Vector[3, int]
     Vector4* = Vector[4, float]
     Vector4int* = Vector[4, int]
-    # Extra vector types
-    VectorN*[N: static[int]] = Vector[N, float]
-    VectorNint*[N: static[int]] = Vector[N, int]
+# Extra vector types
+when defined(typeN):
+    type
+        VectorN*[N: static[int]] = Vector[N, float]
+        VectorNint*[N: static[int]] = Vector[N, int]
 
 
 template `[]`*[N, T](vector: Vector[N, T], i: int): T = vector.arr[i]
@@ -59,6 +61,13 @@ template newVector4*(x, y, z, w: float): Vector = newVector[4, float](x, y, z, w
 template newVector4int*(): Vector = newVector[4, int]()
 template newVector4int*(c: int): Vector = newVector[4, int](c)
 template newVector4int*(x, y, z, w: int): Vector = newVector[4, int](x, y, z, w)
+when defined(typeN):
+    template newVectorN*[N: static[int]](): Vector = newVector[N, float]()
+    template newVectorN*[N: static[int]](c: float): Vector = newVector[N, float](c)
+    template newVectorN*[N: static[int]](args: varargs[float]) = newVector[N, float][args]
+    template newVectorNint*[N: static[int]](): Vector = newVector[N, int]()
+    template newVectorNint*[N: static[int]](c: int): Vector = newVector[N, int](c)
+    template newVectorNint*[N: static[int]](args: varargs[int]) = newVector[N, int][args]
 
 ## Arithmetic Operations
 template `+`*(a: Vector): Vector = a
