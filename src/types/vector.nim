@@ -96,15 +96,11 @@ template `*=`*(a: var Vector, b: SomeNumber): void = a = a * b
 func dot*[N, T](a, b: Vector[N, T]): T =
     for i in 0 ..< a.arr.len:
         result += a[i] * b[i]
-# For cross product
-import matrix
-func angleTo*(a, b: Vector): float
 func cross*[N: static[int], T: SomeFloat](a, b: Vector[N, T]): Vector[N, T] =
     when N != 3 and N != 7:
-        error "Only Vector3 and Vector7 can do cross"
+        raise newException(CatchableError, "Only Vector3 and Vector7 can do cross")
     when N == 7:
-        error "Vector7 is not implement"
-    # TODO cross is still empty
+        raise newException(CatchableError, "Vector7 is not implement")
     newVector[3, T](a.y*b.z - a.z*b.y, a.z*b.x - a.x*b.z, a.x*b.y - a.y*b.x)
 
 func `/`*(a, b: Vector): Vector =
