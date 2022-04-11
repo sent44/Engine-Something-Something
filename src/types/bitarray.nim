@@ -12,7 +12,7 @@ type BitArray*[N: static[int]] = distinct array[div8 N, uint8]
 func len*[N](arr: BitArray[N]): int = N
 
 func `[]`*[N](arr: BitArray[N], i: int): bool =
-    return array[div8 N, uint8](arr)[int i/8].testBit (i mod 8).uint8
+    array[div8 N, uint8](arr)[int i/8].testBit (i mod 8).uint8
 func `[]=`*[N](arr: var BitArray[N], i: int, value: bool): void =
     if value:
         array[div8 N, uint8](arr)[int i/8].setBit (i mod 8).uint8
