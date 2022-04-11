@@ -79,8 +79,8 @@ template `+=`*(a: var Vector, b: Vector): void = a = a + b
 func `-`*(a: Vector): Vector =
     for i in 0 ..< a.arr.len:
         result[i] = -a[i]
-template `-`*(a, b: Vector): Vector = a + -b
-template `-=`*(a: var Vector, b: Vector): void = a = a - b
+func `-`*(a, b: Vector): Vector = a + -b
+template `-=`*[N, T](a: var Vector[N, T], b: Vector[N, T]): void = a = a - b
 
 func `*`*(a, b: Vector): Vector =
     for i in 0 ..< a.arr.len:
@@ -91,8 +91,8 @@ func `*`*[N, T](a: Vector[N, T], b: SomeNumber): Vector[N, T] =
 func `*`*[N, T](a: SomeNumber, b: Vector[N, T]): Vector[N, T] =
     for i in 0 ..< b.arr.len:
         result[i] = T(a) * b[i]
-template `*=`*(a: var Vector, b: Vector): void = a = a * b
-template `*=`*(a: var Vector, b: SomeNumber): void = a = a * b
+template `*=`*[N, T](a: var Vector[N, T], b: Vector[N, T]): void = a = a * b
+template `*=`*[N, T](a: var Vector[N, T], b: SomeNumber): void = a = a * b
 func dot*[N, T](a, b: Vector[N, T]): T =
     for i in 0 ..< a.arr.len:
         result += a[i] * b[i]
@@ -109,11 +109,11 @@ func `/`*(a, b: Vector): Vector =
 func `/`*[N, T](a: Vector[N, T], b: SomeNumber): Vector[N, T] =
     for i in 0 ..< a.arr.len:
         result[i] = a[i] / T(b)
-# template `/=`*(a: var Vector, b: Vector): void = a = a / b
-template `/=`*(a: var Vector, b: SomeNumber): void = a = a / b
+# template `/=`*[N, T](a: var Vector[N, T], b: Vector): void = a = a / b
+template `/=`*[N, T](a: var Vector[N, T], b: SomeNumber): void = a = a / b
 
 
-## Compareation Operations
+## Comparison Operations
 func `==`*(a, b: Vector): bool =
     for i in 0 ..< a.arr.len:
         if a[i] != b[i]:

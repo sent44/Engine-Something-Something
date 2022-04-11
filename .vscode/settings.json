@@ -1,33 +1,19 @@
 {
-    "spellright.language": [
-        "en"
+    "cSpell.spellCheckOnlyWorkspaceFiles": true,
+    "cSpell.enableFiletypes": [
+        "nim"
     ],
-    "spellright.documentTypes": [
-        "markdown",
-        "latex",
-        "plaintext",
-        "nim",
-        "nimble",
-        "nims"
+    "cSpell.words": [
+        "arccos",
+        "bitops",
+        "isnot",
+        "Nint",
+        "typedesc",
+        "typetraits",
+        "varargs"
     ],
-    "spellright.parserByClass": {
-        "nim": {
-            "parser": "code"
-        },
-        "nimble": {
-            "parser": "code"
-        },
-        "nims": {
-            "parser": "code"
-        }
-    },
-    "spellright.notificationClass": "information",
-    "spellright.ignoreFiles": [
-        "**/.gitignore",
-        "**/.spellignore",
-        "outputExpected.txt",
-        "outputGotten.txt",
-        "megatest.nim",
-        "nimcache/*"
+    "cSpell.ignoreWords": [
+        "CatchableError",
+        "MatrixNint"
     ]
 }

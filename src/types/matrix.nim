@@ -3,8 +3,7 @@ import std/typetraits
 import vector
 
 # [Column, Row, Type]
-type Matrix*[N: static[int], M: static[int], T: SomeNumber] = object
-    vecs: array[M, Vector[N, T]]
+type Matrix*[N: static[int], M: static[int], T: SomeNumber] = distinct array[M, Vector[N, T]]
 
 type
     Matrix2* = Matrix[2, 2, float]
@@ -19,10 +18,14 @@ when defined(typeN):
         MatrixNint*[N: static[int]] = Matrix[N, N, int]
 
 
-template `[]`*[N, M, T](matrix: Matrix[N, M, T], m: int): Vector[N, T] = matrix.vecs[m] # Matrix[m, n]
-template `[]`*[N, M, T](matrix: Matrix[N, M, T], m: int, n: int): T = matrix[m][n] # Matrix[m][n]
-template `[]=`*[N, M, T](matrix: Matrix[N, M, T], m: int, value: Vector[N, T]): void = matrix.vecs[m] = value
-template `[]=`*[N, M, T](matrix: Matrix[N, M, T], m: int, n: int, value: T): void = matrix.vecs[m][n] = value
+template `[]`*[N, M, T](matrix: Matrix[N, M, T], m: int): Vector[N, T] = # Matrix[m][n]
+    array[M, Vector[N, T]](matrix)[m]
+template `[]`*[N, M, T](matrix: Matrix[N, M, T], m: int, n: int): T = # Matrix[m, n]
+    array[M, Vector[N, T]](matrix)[m][n] 
+template `[]=`*[N, M, T](matrix: var Matrix[N, M, T], m: int, value: Vector[N, T]): void =
+    array[M, Vector[N, T]](matrix)[m] = value
+template `[]=`*[N, M, T](matrix: var Matrix[N, M, T], m: int, n: int, value: T): void =
+    array[M, Vector[N, T]](matrix)[m][n] = value
 
 func newMatrix*[N: static[int], M: static[int], T: SomeNumber](args: varargs[Vector[N, T]]): Matrix[N, M, T] =
     if args.len != M:
@@ -30,17 +33,19 @@ func newMatrix*[N: static[int], M: static[int], T: SomeNumber](args: varargs[Vec
     for i, v in args:
         result[i] = v
 
+# sizeC function is for that don't have to pass generic type 
+func sizeC[N, M, T](matrix: Matrix[N, M, T]): int = M
 
-template `+`*(a: Matrix): Matrix = a
+func `+`*(a: Matrix): Matrix = a
 func `+`*(a, b: Matrix): Matrix =
-    for i in 0 ..< a.vecs.len:
+    for i in 0 ..< a.sizeC:
         result[i] = a[i] + b[i]
 template `+=`*(a: var Matrix, b: Matrix): void = a = a + b
 
 func `-`*(a: Matrix): Matrix =
-    for i in 0 ..< a.vecs.len:
+    for i in 0 ..< a.sizeC:
         result[i] = -a[i]
-template `-`*(a, b: Matrix): Matrix = a + -b
+func `-`*(a, b: Matrix): Matrix = a + -b
 template `-=`*(a: var Matrix, b: Matrix): void = a = a - b
 
 func dot*[N1, M1, N2, M2, T](a: Matrix[N1, M1, T], b: Matrix[N2, M2, T]): Matrix[N2, M1, T] =
@@ -50,18 +55,18 @@ func dot*[N1, M1, N2, M2, T](a: Matrix[N1, M1, T], b: Matrix[N2, M2, T]): Matrix
         for j in  0 ..< M1:
             result[j, i] = T(0)
             for k in 0 ..< N1:
-                result[j, i] += a[j, k] * b[k, i]
+                result[j, i] = result[j, i] + a[j, k] * b[k, i]
 func cross*(a, b: Matrix): Vector =
     raise newException(CatchableError, "Use Vector version dammit!")
 func `*`*[N1, M1, N2, M2, T](a: Matrix[N1, M1, T], b: Matrix[N2, M2, T]): Matrix[N2, M1, T] = a.dot(b)
 template `*=`*[N, T](a: var Matrix[N, N, T], b: Matrix[N, N, T]): void = a = a * b
 
+
 func castTo*(`from`: Matrix, to_type: typedesc): to_type =
     if toType.genericHead isnot Matrix.genericHead:
         raise newException(CatchableError, "Error, cannot cast to non Matrix.")
-    for i in 0 ..< min(`from`.vecs.len, result.vecs.len):
+    for i in min(`from`.sizeC, result.sizeC):
         result[i] = `from`[i].castTo(type(result[0]))
-        discard
 
 func det*[N: static[int], M: static[int], T: SomeNumber](matrix: Matrix[N, M, T]): float =
     if N != M:
@@ -69,12 +74,12 @@ func det*[N: static[int], M: static[int], T: SomeNumber](matrix: Matrix[N, M, T]
     result = 1.0
     # NOTE Repurpose for numerical methods?
     var mat = matrix.castTo(Matrix[N, M, float])
-    for i in 0 ..< M - 1:
+    for i in M - 1:
         var value = mat[i, i]
-        mat[i] /= value
+        mat[i] = mat[i] / value
         for j in i+1 ..< N:
             mat[j] -= mat[i] * mat[j, i]
-        mat[i] *= value
+        mat[i] = mat[i] * value
         result *= mat[i, i]
     result *= mat[N-1, N-1]
 

@@ -1,8 +1,8 @@
 {
     "recommendations": [
-        "ban.spellright",
         "vadimcn.vscode-lldb",
         "nimsaem.nimvscode",
-        "webfreak.debug"
+        "webfreak.debug",
+        "streetsidesoftware.code-spell-checker"
     ]
 }
