@@ -8,12 +8,9 @@
             "type": "shell",
             "command": "nim",
             "args": [
-                "compile",
-                "--run",
-                "--define:debug",
-                "--hints:off",
-                "--out:${workspaceFolder}/bin/${fileBasenameNoExtension}",
-                "${file}"
+                "vscodeBuildCurrentFile",
+                "debug=yes",
+                "file=${relativeFile}"
             ],
             "group": {
                 "kind": "build",
