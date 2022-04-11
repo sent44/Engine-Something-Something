@@ -1,1 +1,1 @@
-switch("path", "../src/")
+--path: "../src/"

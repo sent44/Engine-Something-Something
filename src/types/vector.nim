@@ -12,7 +12,6 @@ type
     Vector3int* = Vector[3, int]
     Vector4* = Vector[4, float]
     Vector4int* = Vector[4, int]
-# Extra vector types
 when defined(typeN):
     type
         VectorN*[N: static[int]] = Vector[N, float]

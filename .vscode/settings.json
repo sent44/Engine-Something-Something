@@ -6,14 +6,35 @@
     "cSpell.words": [
         "arccos",
         "bitops",
+        "dynamicbase",
+        "enginefunc",
         "isnot",
+        "ldinput",
+        "lmingw",
+        "mwindows",
         "Nint",
+        "nxcompat",
+        "rsplit",
+        "strutils",
         "typedesc",
         "typetraits",
         "varargs"
     ],
     "cSpell.ignoreWords": [
         "CatchableError",
-        "MatrixNint"
+        "MatrixNint",
+        "dynlibOverride",
+        "ldxerr",
+        "ldxguid",
+        "lgdi32",
+        "limm32",
+        "lole32",
+        "loleaut32",
+        "lsetupapi",
+        "lshell32",
+        "luser",
+        "luuid",
+        "lversion",
+        "lwinmm"
     ]
 }

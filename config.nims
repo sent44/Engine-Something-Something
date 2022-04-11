@@ -58,6 +58,7 @@ task vscodeBuildCurrentFile, "":
     if fileExt.len == 2 and fileExt[1] == "nim":
         switch "run"
         switch "hints", "off"
+        switch "path", "src/"
         put "binName", fileExt[0]
         setCommand "compile", get "file"
 

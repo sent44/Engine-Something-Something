@@ -33,6 +33,17 @@ func newMatrix*[N: static[int], M: static[int], T: SomeNumber](args: varargs[Vec
     for i, v in args:
         result[i] = v
 
+template newMatrix2*(args: varargs[Vector[2, float]]): Matrix = newMatrix[2, 2, float](args)
+template newMatrix2int*(args: varargs[Vector[2, int]]): Matrix = newMatrix[2, 2, int](args)
+template newMatrix3*(args: varargs[Vector[3, float]]): Matrix = newMatrix[3, 3, float](args)
+template newMatrix3int*(args: varargs[Vector[3, int]]): Matrix = newMatrix[3, 3, int](args)
+template newMatrix4*(args: varargs[Vector[4, float]]): Matrix = newMatrix[4, 4, float](args)
+template newMatrix4int*(args: varargs[Vector[4, int]]): Matrix = newMatrix[4, 4, int](args)
+
+when defined(typeN):
+    template newMatrixN*[N: static[int]](args: varargs[Vector[N, float]]): Matrix = newMatrix[N, N, float](args)
+    template newMatrixNint*[N: static[int]](args: varargs[Vector[N, int]]): Matrix = newMatrix[N, N, int](args)
+
 # sizeC function is for that don't have to pass generic type 
 func sizeC[N, M, T](matrix: Matrix[N, M, T]): int = M
 
@@ -106,3 +117,4 @@ template `$`*(matrix: Matrix): string = matrix.toString()
 # echo newMatrix[3, 1,int](newVector3int(3, 4, 2)) * newMatrix[4, 3, int](newVector4int(13, 9, 7, 15), newVector4int(8, 7, 4, 6), newVector4int(6, 4, 0, 3))
 # echo newMatrix[1, 3, int](newVector[1, int](4), newVector[1, int](5), newVector[1, int](6)) * newMatrix[3, 1, int](newVector3int(1, 2, 3))
 # echo newMatrix[3, 1, int](newVector3int(1, 2, 3)) * newMatrix[1, 3, int](newVector[1, int](4), newVector[1, int](5), newVector[1, int](6))
+# echo newMatrix2(newVector2(3.3, 4.5), newVector2(6.8, 8.1))
