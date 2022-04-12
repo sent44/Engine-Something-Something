@@ -3,6 +3,7 @@
         "vadimcn.vscode-lldb",
         "nimsaem.nimvscode",
         "webfreak.debug",
-        "streetsidesoftware.code-spell-checker"
+        "streetsidesoftware.code-spell-checker",
+        "oderwat.indent-rainbow"
     ]
 }

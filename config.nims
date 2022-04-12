@@ -1,17 +1,21 @@
 import std/strutils
 
-# Configs
-switch "import", "src/enginefunc"
+## Configurations
+put "binName", "engine"
+put "debug", "no"
+put "enableTypeN", "yes"
+
+# Doesn't mean you should edit these 3 lines directly
+switch "import", "src/backend/enginefunc"
 switch "dynlibOverride", "libSDL2"
 switch "passL", "-static -lmingw32 -lSDL2main -lSDL2 -Wl,--no-undefined -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid"
 
-put "binName", "engine"
 
-put "enableTypeN", "yes"
 var disableConfigHint = true
+var outBin = false
 
 
-# Tasks
+## Tasks
 task beforeBuild, "":
     for i in 2 ..< paramCount() + 1:
         var args = paramStr(i).split("=")
@@ -20,6 +24,7 @@ task beforeBuild, "":
         else:
             raise newException(CatchableError, "NO")
     disableConfigHint = false
+    outBin = true
 
 task build, "Build the project!":
     beforeBuildTask()
@@ -37,13 +42,14 @@ task tests, "Run the unit testing":
 task help, """
 Print help below!
 =================================
-debug=yes/no [default: no]
-enableTypeN=yes/no [default: yes]
+debug=yes/no [default: """ & get("debug") & """]
+enableTypeN=yes/no [default: """ & get("enableTypeN") & """]
 
 this is help
 very helpful help!
 """: discard
 
+# VSCode tasks
 task vscodeBuildCurrentFile, "":
     beforeBuildTask()
     if not exists("file"):
@@ -55,20 +61,26 @@ task vscodeBuildCurrentFile, "":
     if filePath.len > 1:
         fileName = filePath[1]
     var fileExt = fileName.rsplit(".", 1)
-    if fileExt.len == 2 and fileExt[1] == "nim":
-        switch "run"
+    if fileExt[0] == "main":
+        switch "hints", "off"
+        echo "Disable auto build for main.nim."
+    elif fileExt.len == 2 and fileExt[1] == "nim":
+        # switch "run"
         switch "hints", "off"
         switch "path", "src/"
-        put "binName", fileExt[0]
-        setCommand "compile", get "file"
+        outBin = false
+        setCommand "r", get "file"
 
 task vscodeBuildDebug, "":
     beforeBuildTask()
 
-# Conditional configs
+
+## Conditional configurations
+# `-mwindows` make print log disappear :(
 if not(exists("debug") and get("debug") == "yes"):
     switch "passL", "-mwindows"
 else:
+    # Might pass `--define:debug` in command instant of `debug=yes`
     if not defined(debug):
         switch "define", "debug"
 
@@ -76,7 +88,10 @@ if get("enableTypeN") == "yes":
     if not defined(typeN):
         switch "define", "typeN"
 
+# Sometimes these hints are annoy
 if disableConfigHint:
     switch "hint", "Conf:off"
 
-switch "out", "bin/" & get("binName")
+# Either not need (VSCode build current file task) or can't (testament)
+if outBin:
+    switch "out", "bin/" & get("binName")
