@@ -15,12 +15,14 @@ task beforeBuild, "":
     switch "import", "src/backend/logging"
     switch "dynlibOverride", "libSDL2"
     switch "passL", "-static -lmingw32 -lSDL2main -lSDL2 -Wl,--no-undefined -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid"
+    
     for i in 2 ..< paramCount() + 1:
         var args = paramStr(i).split("=")
         if args.len == 2:
             put args[0], args[1]
         else:
             raise newException(CatchableError, "NO")
+    
     disableConfigHint = false
     outBin = true
 
@@ -52,18 +54,20 @@ task vscodeBuildCurrentFile, "":
     beforeBuildTask()
     if not exists("file"):
         raise newException(CatchableError, "NO")
+    
     var filePath = get("file").rsplit("/", 1)
     if filePath.len == 1:
         filePath = get("file").rsplit("\\", 1)
+    
     var fileName = filePath[0]
     if filePath.len > 1:
         fileName = filePath[1]
+    
     var fileExt = fileName.rsplit(".", 1)
     if fileExt[0] == "main":
         switch "hints", "off"
         echo "Disable auto build for main.nim."
     elif fileExt.len == 2 and fileExt[1] == "nim":
-        # switch "run"
         switch "hints", "off"
         switch "path", "src/"
         outBin = false
