@@ -1,4 +1,4 @@
-include backend/engine
+import backend/engine
 
 proc main(): int =
   let engine = new EngineSystem

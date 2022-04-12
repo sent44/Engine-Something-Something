@@ -5,18 +5,16 @@ put "binName", "engine"
 put "debug", "no"
 put "enableTypeN", "yes"
 
-# Doesn't mean you should edit these 3 lines directly
-switch "import", "src/backend/enginefunc"
-switch "dynlibOverride", "libSDL2"
-switch "passL", "-static -lmingw32 -lSDL2main -lSDL2 -Wl,--no-undefined -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid"
-
-
 var disableConfigHint = true
 var outBin = false
 
 
 ## Tasks
 task beforeBuild, "":
+    switch "import", "src/backend/enginefunc"
+    switch "import", "src/backend/logging"
+    switch "dynlibOverride", "libSDL2"
+    switch "passL", "-static -lmingw32 -lSDL2main -lSDL2 -Wl,--no-undefined -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid"
     for i in 2 ..< paramCount() + 1:
         var args = paramStr(i).split("=")
         if args.len == 2:

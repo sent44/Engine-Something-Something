@@ -1,16 +1,13 @@
 # import sdl2
 
-{.hint[XDeclaredButNotUsed]: off.}
-
 type
     EngineObj = object
         a: int
-    EngineSystem = ref EngineObj
+    EngineSystem* = ref EngineObj
 
 # proc `=destroy`(x: var EngineObj) =
 #     echo "destroy!"
 
-proc run(engine: EngineSystem): int =
-    var i = 0
+proc run*(engine: EngineSystem): int =
     while true:
         discard

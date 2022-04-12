@@ -1,4 +1,5 @@
 {.used.}
+{.warning[UnusedImport]: off.}
 import std/math
 
 func `==?`*[T: SomeFloat](a, b: T): bool = a.almostEqual(b)

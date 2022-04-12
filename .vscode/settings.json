@@ -5,6 +5,7 @@
     ],
     "cSpell.words": [
         "arccos",
+        "astGenRepr",
         "bitops",
         "CatchableError",
         "dynamicbase",
@@ -32,8 +33,10 @@
         "mwindows",
         "Nint",
         "nxcompat",
+        "objc",
         "rsplit",
         "strutils",
+        "treeRepr",
         "typedesc",
         "typetraits",
         "varargs",
