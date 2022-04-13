@@ -44,9 +44,9 @@ func toString*[N, T](rect: Rect[N, T]): string =
     result &= ")"
 func `$`*(rect: Rect): string = rect.toString()
 
-template test(a: varargs[int]) = echo a.len
-let aaa = [3, 4, 5]
-test(aaa)
+# template test(a: varargs[int]) = echo a.len
+# let aaa = [3, 4, 5]
+# test(aaa)
 
-echo newRect[2, int](4, 5, 6, 7)
-echo newRect[2, int](newVector2int(3, 5), newVector2int(7, 9))
+# echo newRect[2, int](4, 5, 6, 7)
+# echo newRect[2, int](newVector2int(3, 5), newVector2int(7, 9))

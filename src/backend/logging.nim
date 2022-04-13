@@ -5,7 +5,7 @@ import std/times
 import std/typetraits
 import std/strutils
 
-#* Copy here for safe keeping
+# NOTE Copy here for safe keeping
 #* printColors = stdout.isatty()
 #* nnkLiterals = {nnkCharLit..nnkNilLit}
 
@@ -18,7 +18,7 @@ type LoggingLevel* {.pure.} = enum
     PRINT, WARN, INFO, ERROR
 
 {.hint[XDeclaredButNotUsed]:off.}
-# Store log information of log type to broadcast to the one who need
+# Store log information of log type to broadcast to the one whose need
 type
     LoggingEntry = object
         level: LoggingLevel
@@ -29,10 +29,10 @@ type
     #     entry: array[20, LoggingEntry]
     LoggingDB[T] = ref object
 
+
 # Forward declare override just for below function
 func toString[T: tuple | object](obj: T, recursiveCount: int = 0): string
 func toRefString[T: ref object](obj: T, recursiveCount: int = 0): string =
-# func `$`[T: ref object](obj: T, recursiveCount: int = 0): string =
     if obj.isNil:
         result = "nil"
     else:
@@ -43,7 +43,6 @@ func toRefString[T: ref object](obj: T, recursiveCount: int = 0): string =
         result.add "("
         for k, v in fieldPairs(obj[]):
             result.add k & ": "
-            # echo v is ref object
             when v is string:
                 result.add v
             elif v is ref object:
@@ -70,7 +69,6 @@ func expandRefObjectString*[T: ref object](obj: T, recursiveCount: int = 0): str
         result.add "("
         for k, v in fieldPairs(obj[]):
             result.add k & ": "
-            # echo v is ref object
             when v is string:
                 result.add v
             elif v is ref object:
@@ -84,7 +82,6 @@ func expandRefObjectString*[T: ref object](obj: T, recursiveCount: int = 0): str
         result.add ")"
 
 
-
 # Override build-in `$` for object toString 
 func toString[T: tuple | object](obj: T, recursiveCount: int = 0): string =
     when T is tuple:
@@ -93,7 +90,6 @@ func toString[T: tuple | object](obj: T, recursiveCount: int = 0): string =
         result.add "obj."
         result.add T.name
     result.add "("
-    # NOTE Can be optimize by separate object and tuple loop, maybe?
     for k, v in obj.fieldPairs:
         when T isnot tuple:
             result.add k & ": "
@@ -136,6 +132,8 @@ template `?`*[T: tuple | object | ref object](obj: T): string =
     else:
         expandObjectString(obj)
 
+
+# TODO Make it more than just print
 proc log*(level: LoggingLevel, info: tuple[filename: string,line: int, column: int], args: varargs[LoggingObj]) = 
     let time = getTime().toUnix
     write(stdout, "[" & $time & "] " & info.filename & ":" & $info.line & " ")
@@ -144,7 +142,7 @@ proc log*(level: LoggingLevel, info: tuple[filename: string,line: int, column: i
     write(stdout, "\n")
 
 func loggingStringOperation*[T](x: T): string =
-    # Normal override `$` can't be use outside this package
+    # Normal override `$` can't be use outside of this package
     {.hint[XDeclaredButNotUsed]:off.}
     func `$`[U: tuple | object](obj: U): string =
         return obj.toString
@@ -152,7 +150,6 @@ func loggingStringOperation*[T](x: T): string =
         return obj.toRefString
     return $x
 
-# TODO Convert `$` to name function, func `$` is still use to disable build-in one
 macro log*(levelIdent: untyped, args: varargs[untyped]): untyped =
     let statement = newNimNode nnkCall
     statement.add newIdentNode "log"                  # [0]
@@ -165,7 +162,7 @@ macro log*(levelIdent: untyped, args: varargs[untyped]): untyped =
         objc.add newIdentNode "LoggingObj"                       # [0]
         objc.add newNimNode nnkExprColonExpr                     # [1]
         objc[1].add newIdentNode "text"                          # [1][0]
-        if arg.kind == nnkStrLit: # or (arg.kind == nnkPrefix and arg[0] == ident"$"):
+        if arg.kind == nnkStrLit:
             objc[1].add arg                                      # [1][1]
         elif arg.kind == nnkNilLit:
             objc[1].add newLit "nil"                             # [1][1]
@@ -183,7 +180,6 @@ macro log*(levelIdent: untyped, args: varargs[untyped]): untyped =
     
     result = newNimNode nnkStmtList
     result.add statement
-    # echo result.astGenRepr
 
 
 template print*(args: varargs[untyped]) = log(PRINT, args)

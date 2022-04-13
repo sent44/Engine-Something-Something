@@ -9,12 +9,16 @@ put "enableTypeN", "yes"
 # Should not config these
 switch "import", "src/backend/enginefunc"
 switch "import", "src/backend/logging"
+# switch "threads", "on"
+switch "showAllMismatches", "on"
 
 var disableConfigHint = true
 var outBin = false
+var enableMWindow = false
 
 ## Tasks
 task beforeBuild, "":
+    enableMWindow = true
     switch "dynlibOverride", "libSDL2"
     switch "passL", "-static -lmingw32 -lSDL2main -lSDL2 -Wl,--no-undefined -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid"
     
@@ -82,9 +86,10 @@ task vscodeBuildDebug, "":
 ## Conditional configurations
 # `-mwindows` make print log disappear :(
 if not(exists("debug") and get("debug") == "yes"):
-    switch "passL", "-mwindows"
+    if enableMWindow:
+        switch "passL", "-mwindows"
 else:
-    # Might pass `--define:debug` in command instant of `debug=yes`
+    # Might be able to pass `--define:debug` in command instant of `debug=yes`
     if not defined(debug):
         switch "define", "debug"
 

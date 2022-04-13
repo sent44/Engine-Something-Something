@@ -4,6 +4,7 @@
         "nimsaem.nimvscode",
         "webfreak.debug",
         "streetsidesoftware.code-spell-checker",
-        "oderwat.indent-rainbow"
+        "oderwat.indent-rainbow",
+        "aaron-bond.better-comments"
     ]
 }
