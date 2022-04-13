@@ -30,8 +30,9 @@ type
     LoggingDB[T] = ref object
 
 # Forward declare override just for below function
-proc `$`[T: tuple | object](obj: T, recursiveCount: int = 0): string
-proc `$`[T: ref object](obj: T, recursiveCount: int = 0): string =
+func toString[T: tuple | object](obj: T, recursiveCount: int = 0): string
+func toRefString[T: ref object](obj: T, recursiveCount: int = 0): string =
+# func `$`[T: ref object](obj: T, recursiveCount: int = 0): string =
     if obj.isNil:
         result = "nil"
     else:
@@ -45,25 +46,47 @@ proc `$`[T: ref object](obj: T, recursiveCount: int = 0): string =
             # echo v is ref object
             when v is string:
                 result.add v
+            elif v is ref object:
+                result.add toRefString(v, recursiveCount + 1)
             elif v is object or v is ref object or v is tuple:
-                result.add $(v, recursiveCount + 1)
+                result.add toString(v, recursiveCount + 1)
             else:
                 result.add $v
             result.add ", "
         result.removeSuffix ", "
         result.add ")"
 
+
+# Forward declare for below function
+func expandObjectString*[T: tuple | object](obj: T, recursiveCount: int = 0): string
 func expandRefObjectString*[T: ref object](obj: T, recursiveCount: int = 0): string =
     if obj.isNil:
         result = "nil"
     else:
-        # TODO Too tried to continue
-        discard
+        result.add "obj*."
+        var name = T.name
+        name.removePrefix "ref "
+        result.add name
+        result.add "("
+        for k, v in fieldPairs(obj[]):
+            result.add k & ": "
+            # echo v is ref object
+            when v is string:
+                result.add v
+            elif v is ref object:
+                result.add expandRefObjectString(v, recursiveCount + 1)
+            elif v is object or v is ref object or v is tuple:
+                result.add expandObjectString(v, recursiveCount + 1)
+            else:
+                result.add $v
+            result.add ", "
+        result.removeSuffix ", "
+        result.add ")"
 
-template `?`*[T: tuple | object](obj: T): string = expandRefObjectString(obj)
+
 
 # Override build-in `$` for object toString 
-proc `$`[T: tuple | object](obj: T, recursiveCount: int = 0): string =
+func toString[T: tuple | object](obj: T, recursiveCount: int = 0): string =
     when T is tuple:
         result.add "tuple"
     else:
@@ -77,7 +100,7 @@ proc `$`[T: tuple | object](obj: T, recursiveCount: int = 0): string =
         when v is string:
             result.add v
         elif v is object or v is ref object or v is tuple:
-            result.add $(v, recursiveCount + 1)
+            result.add toString(v, recursiveCount + 1)
         else:
             result.add $v
         result.add ", "
@@ -107,7 +130,11 @@ func expandObjectString*[T: tuple | object](obj: T, recursiveCount: int = 0): st
     result.removeSuffix ", "
     result.add ")"
 
-template `?`*[T: tuple | object](obj: T): string = expandObjectString(obj)
+template `?`*[T: tuple | object | ref object](obj: T): string =
+    when T is ref object:
+        expandRefObjectString(obj)
+    else:
+        expandObjectString(obj)
 
 proc log*(level: LoggingLevel, info: tuple[filename: string,line: int, column: int], args: varargs[LoggingObj]) = 
     let time = getTime().toUnix
@@ -116,6 +143,16 @@ proc log*(level: LoggingLevel, info: tuple[filename: string,line: int, column: i
         write(stdout, arg.text)
     write(stdout, "\n")
 
+func loggingStringOperation*[T](x: T): string =
+    # Normal override `$` can't be use outside this package
+    {.hint[XDeclaredButNotUsed]:off.}
+    func `$`[U: tuple | object](obj: U): string =
+        return obj.toString
+    func `$`[U: ref object](obj: U): string =
+        return obj.toRefString
+    return $x
+
+# TODO Convert `$` to name function, func `$` is still use to disable build-in one
 macro log*(levelIdent: untyped, args: varargs[untyped]): untyped =
     let statement = newNimNode nnkCall
     statement.add newIdentNode "log"                  # [0]
@@ -125,17 +162,22 @@ macro log*(levelIdent: untyped, args: varargs[untyped]): untyped =
 
     for arg in args:
         let objc = newNimNode nnkObjConstr
-        objc.add newIdentNode "LoggingObj"    # [0]
-        objc.add newNimNode nnkExprColonExpr # [1]
-        objc[1].add newIdentNode "text"      # [1][0]
+        objc.add newIdentNode "LoggingObj"                       # [0]
+        objc.add newNimNode nnkExprColonExpr                     # [1]
+        objc[1].add newIdentNode "text"                          # [1][0]
         if arg.kind == nnkStrLit: # or (arg.kind == nnkPrefix and arg[0] == ident"$"):
-            objc[1].add arg                  # [1][1]
+            objc[1].add arg                                      # [1][1]
         elif arg.kind == nnkNilLit:
-            objc[1].add newLit "nil"         # [1][1]
+            objc[1].add newLit "nil"                             # [1][1]
         else:
-            objc[1].add newNimNode nnkPrefix # [1][1]
-            objc[1][1].add newIdentNode "$"  # [1][1][0]
-            objc[1][1].add arg               # [1][1][1]
+            objc[1].add newNimNode nnkCall                       # [1][1]
+            objc[1][1].add newIdentNode "loggingStringOperation" # [1][1][0]
+            objc[1][1].add arg                                   # [1][1][1]
+
+        # else:
+        #     objc[1].add newNimNode nnkPrefix                   # [1][1]
+        #     objc[1][1].add newIdentNode "$"                    # [1][1][0]
+        #     objc[1][1].add arg                                 # [1][1][1]
             # NOTE Maybe attach meta to objc?, type?
         statement.add objc                            # [3]
     
