@@ -13,17 +13,25 @@ type LoggingObj* = object
     text: string
     meta: string
 
-# Store log information of log type to broadcast to the one who need
-type
-    LoggingDB*[T] = ref object
-    LoggingEntry* = object
 
 type LoggingLevel* {.pure.} = enum
     PRINT, WARN, INFO, ERROR
 
+{.hint[XDeclaredButNotUsed]:off.}
+# Store log information of log type to broadcast to the one who need
+type
+    LoggingEntry = object
+        level: LoggingLevel
+        time: int64
+        # entry: ref UncheckedArray[LoggingObj]
+        entry: seq[ref LoggingObj]
+    # LoggingDBSection* = object
+    #     entry: array[20, LoggingEntry]
+    LoggingDB[T] = ref object
+
 # Forward declare override just for below function
 proc `$`[T: tuple | object](obj: T, recursiveCount: int = 0): string
-proc `$`[T: ref object](obj: T): string =
+proc `$`[T: ref object](obj: T, recursiveCount: int = 0): string =
     if obj.isNil:
         result = "nil"
     else:
@@ -37,14 +45,22 @@ proc `$`[T: ref object](obj: T): string =
             # echo v is ref object
             when v is string:
                 result.add v
+            elif v is object or v is ref object or v is tuple:
+                result.add $(v, recursiveCount + 1)
             else:
-                when v is ref object:
-                    result.add $v
-                else:
-                    result.add $v
+                result.add $v
             result.add ", "
         result.removeSuffix ", "
         result.add ")"
+
+func expandRefObjectString*[T: ref object](obj: T, recursiveCount: int = 0): string =
+    if obj.isNil:
+        result = "nil"
+    else:
+        # TODO Too tried to continue
+        discard
+
+template `?`*[T: tuple | object](obj: T): string = expandRefObjectString(obj)
 
 # Override build-in `$` for object toString 
 proc `$`[T: tuple | object](obj: T, recursiveCount: int = 0): string =
@@ -60,6 +76,8 @@ proc `$`[T: tuple | object](obj: T, recursiveCount: int = 0): string =
             result.add k & ": "
         when v is string:
             result.add v
+        elif v is object or v is ref object or v is tuple:
+            result.add $(v, recursiveCount + 1)
         else:
             result.add $v
         result.add ", "
@@ -80,7 +98,9 @@ func expandObjectString*[T: tuple | object](obj: T, recursiveCount: int = 0): st
         when v is string:
             result.add v
         elif v is object or v is tuple:
-            result.add expandObjectString(v)
+            result.add expandObjectString(v, recursiveCount + 1)
+        elif v is ref object:
+            result.add expandRefObjectString(v, recursiveCount + 1)
         else:
             result.add $v
         result.add ", "
