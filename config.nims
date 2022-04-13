@@ -5,14 +5,16 @@ put "binName", "engine"
 put "debug", "no"
 put "enableTypeN", "yes"
 
+
+# Should not config these
+switch "import", "src/backend/enginefunc"
+switch "import", "src/backend/logging"
+
 var disableConfigHint = true
 var outBin = false
 
-
 ## Tasks
 task beforeBuild, "":
-    switch "import", "src/backend/enginefunc"
-    switch "import", "src/backend/logging"
     switch "dynlibOverride", "libSDL2"
     switch "passL", "-static -lmingw32 -lSDL2main -lSDL2 -Wl,--no-undefined -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid"
     
@@ -66,7 +68,7 @@ task vscodeBuildCurrentFile, "":
     var fileExt = fileName.rsplit(".", 1)
     if fileExt[0] == "main":
         switch "hints", "off"
-        echo "Disable auto build for main.nim."
+        echo "VSCode (auto) build task for `main.nim` is disabled."
     elif fileExt.len == 2 and fileExt[1] == "nim":
         switch "hints", "off"
         switch "path", "src/"

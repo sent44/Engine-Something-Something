@@ -5,5 +5,5 @@ proc main(): int =
   engine.run()
 
 when isMainModule:
-  when defined(debug): echo "This is debugging." # Temporary line
+  when defined(debug): info "This is debugging." # Temporary line
   quit main()
