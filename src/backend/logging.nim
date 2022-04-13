@@ -21,15 +21,38 @@ type
 type LoggerLevel* {.pure.} = enum
     PRINT, WARN, INFO, ERROR
 
-# type SystemProcError = object of CatchableError
+# Forward declare override just for below function
+proc `$`[T: tuple | object](obj: T, recursiveCount: int = 0): string
+proc `$`[T: ref object](obj: T): string =
+    if obj.isNil:
+        result = "nil"
+    else:
+        result.add "obj*."
+        var name = T.name
+        name.removePrefix "ref "
+        result.add name
+        result.add "("
+        for k, v in fieldPairs(obj[]):
+            result.add k & ": "
+            # echo v is ref object
+            when v is string:
+                result.add v
+            else:
+                when v is ref object:
+                    result.add $v
+                else:
+                    result.add $v
+            result.add ", "
+        result.removeSuffix ", "
+        result.add ")"
 
 # Override build-in `$` for object toString 
-func `$`[T: tuple | object](obj: T, recursiveCount: int = 0): string =
+proc `$`[T: tuple | object](obj: T, recursiveCount: int = 0): string =
     when T is tuple:
         result.add "tuple"
     else:
-        result.add "object:"
-        result.add obj.type.name
+        result.add "obj."
+        result.add T.name
     result.add "("
     # NOTE Can be optimize by separate object and tuple loop, maybe?
     for k, v in obj.fieldPairs:
@@ -43,14 +66,35 @@ func `$`[T: tuple | object](obj: T, recursiveCount: int = 0): string =
     result.removeSuffix ", "
     result.add ")"
 
+# For pure object output string (bypass user `$`)
+func expandObjectString*[T: tuple | object](obj: T, recursiveCount: int = 0): string =
+    when T is tuple:
+        result.add "tuple"
+    else:
+        result.add "obj."
+        result.add obj.type.name
+    result.add "("
+    for k, v in obj.fieldPairs:
+        when T isnot tuple:
+            result.add k & ": "
+        when v is string:
+            result.add v
+        elif v is object or v is tuple:
+            result.add expandObjectString(v)
+        else:
+            result.add $v
+        result.add ", "
+    result.removeSuffix ", "
+    result.add ")"
+
+template `?`*[T: tuple | object](obj: T): string = expandObjectString(obj)
+
 proc log*(level: LoggerLevel, info: tuple[filename: string,line: int, column: int], args: varargs[LoggerObj]) = 
     let time = getTime().toUnix
     write(stdout, "[" & $time & "] " & info.filename & ":" & $info.line & " ")
     for arg in args:
         write(stdout, arg.text)
     write(stdout, "\n")
-
-# func loggingToString(x: string|`$`): string = discard
 
 macro log*(levelIdent: untyped, args: varargs[untyped]): untyped =
     let statement = newNimNode nnkCall
@@ -73,9 +117,8 @@ macro log*(levelIdent: untyped, args: varargs[untyped]): untyped =
             objc[1][1].add newIdentNode "$"  # [1][1][0]
             objc[1][1].add arg               # [1][1][1]
             # NOTE Maybe attach meta to objc?, type?
-
         statement.add objc                            # [3]
-
+    
     result = newNimNode nnkStmtList
     result.add statement
     # echo result.astGenRepr

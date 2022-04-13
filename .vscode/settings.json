@@ -34,10 +34,12 @@
         "Nint",
         "nxcompat",
         "objc",
+        "repr",
         "rsplit",
         "strutils",
         "treeRepr",
         "typedesc",
+        "typeof",
         "typetraits",
         "varargs",
         "WINDOWPOS"
