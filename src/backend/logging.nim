@@ -9,16 +9,16 @@ import std/strutils
 #* printColors = stdout.isatty()
 #* nnkLiterals = {nnkCharLit..nnkNilLit}
 
-type LoggerObj* = object
+type LoggingObj* = object
     text: string
     meta: string
 
 # Store log information of log type to broadcast to the one who need
 type
-    LoggerDB*[T] = ref object
-    LoggerEntry* = object
+    LoggingDB*[T] = ref object
+    LoggingEntry* = object
 
-type LoggerLevel* {.pure.} = enum
+type LoggingLevel* {.pure.} = enum
     PRINT, WARN, INFO, ERROR
 
 # Forward declare override just for below function
@@ -89,7 +89,7 @@ func expandObjectString*[T: tuple | object](obj: T, recursiveCount: int = 0): st
 
 template `?`*[T: tuple | object](obj: T): string = expandObjectString(obj)
 
-proc log*(level: LoggerLevel, info: tuple[filename: string,line: int, column: int], args: varargs[LoggerObj]) = 
+proc log*(level: LoggingLevel, info: tuple[filename: string,line: int, column: int], args: varargs[LoggingObj]) = 
     let time = getTime().toUnix
     write(stdout, "[" & $time & "] " & info.filename & ":" & $info.line & " ")
     for arg in args:
@@ -105,7 +105,7 @@ macro log*(levelIdent: untyped, args: varargs[untyped]): untyped =
 
     for arg in args:
         let objc = newNimNode nnkObjConstr
-        objc.add newIdentNode "LoggerObj"    # [0]
+        objc.add newIdentNode "LoggingObj"    # [0]
         objc.add newNimNode nnkExprColonExpr # [1]
         objc[1].add newIdentNode "text"      # [1][0]
         if arg.kind == nnkStrLit: # or (arg.kind == nnkPrefix and arg[0] == ident"$"):
