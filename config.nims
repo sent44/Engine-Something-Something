@@ -1,6 +1,7 @@
 import std/strutils
 
 ## Configurations
+
 put "binName", "engine"
 put "debug", "no"
 put "enableTypeN", "yes"
@@ -8,13 +9,16 @@ put "enableTypeN", "yes"
 
 # Should not config these
 switch "import", "src/backend/enginefunc"
-switch "import", "src/backend/logging"
 # switch "threads", "on"
 switch "showAllMismatches", "on"
+switch "path", "src/"
+
+# switch "define", "nimPreviewSlimSystem"
 
 var disableConfigHint = true
 var outBin = false
 var enableMWindow = false
+var importLogging = true
 
 ## Tasks
 task beforeBuild, "":
@@ -65,6 +69,10 @@ task vscodeBuildCurrentFile, "":
     if filePath.len == 1:
         filePath = get("file").rsplit("\\", 1)
     
+    var folderPath = get("file").split("/", 1)
+    if folderPath.len == 1:
+        folderPath = get("file").split("\\", 1)
+
     var fileName = filePath[0]
     if filePath.len > 1:
         fileName = filePath[1]
@@ -74,8 +82,9 @@ task vscodeBuildCurrentFile, "":
         switch "hints", "off"
         echo "VSCode (auto) build task for `main.nim` is disabled."
     elif fileExt.len == 2 and fileExt[1] == "nim":
+        if folderPath[0] == "tests":
+            importLogging = false
         switch "hints", "off"
-        switch "path", "src/"
         outBin = false
         setCommand "r", get "file"
 
@@ -84,7 +93,13 @@ task vscodeBuildDebug, "":
 
 
 ## Conditional configurations
-# `-mwindows` make print log disappear :(
+
+# Both NimScript and anything in tests/ are angry at --import `Logging` for some reason
+# While NimScript error is not really a problem, tests/ script are
+if not defined(testing) and importLogging:
+    switch "import", "src/backend/logging"
+
+# `-mwindows` is making print log disappear :(
 if not(exists("debug") and get("debug") == "yes"):
     if enableMWindow:
         switch "passL", "-mwindows"
