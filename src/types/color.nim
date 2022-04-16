@@ -51,14 +51,14 @@ template `*=`*(a: var Color, b: Color): void = a = a * b
 
 func toString*[T](color: Color[T]): string =
     result = "Color"
-    if T isnot float:
-        result &= T.name
-    result &= "("
+    when T isnot float:
+        result.add T.name
+    result.add "("
     for i in 4:
-        result &= $(color[i]).round(6)
+        result.add $(color[i]).round(6)
         if i < 3:
-            result &= ", "
-    result &= ")"
+            result.add ", "
+    result.add ")"
 template `$`*[T](color: Color[T]): string = color.toString()
 
 # echo newColor(1.2, 2.4, 3.6)

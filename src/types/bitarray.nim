@@ -30,21 +30,15 @@ iterator items*[N](arr: BitArray[N]): bool =
     for i in arr.len:
         yield arr[i]
 
-# converter toBitArray*[N: static[int]](arr: array[N, bool]): BitArray[N] =
-#     for i in N:
-#         result[i] = arr[i]
-func toBitArray*[N: static[int]](arr: array[N, bool]): BitArray[N] =
-    for i in N:
-        result[i] = arr[i]
+converter toBitArray*[N: static[int]](arr: array[N, bool]): BitArray[N] =
+    for i, v in arr:
+        result[i] = v
 
-func toString(arr: BitArray): string =
+func toString*(arr: BitArray): string =
     result = "́[" # Hidden acute accent here!
     for i in arr.len:
-        result &= $arr[i]
+        result.add $arr[i]
         if i < arr.len - 1:
-            result &= ", "
-    result &= "]"
-func `$`(arr: BitArray): string = arr.toString()
-
-echo @[1, 2, 3]
-echo [false, true, true].toBitArray
+            result.add ", "
+    result.add "]"
+template `$`*(arr: BitArray): string = arr.toString()

@@ -96,18 +96,18 @@ func det*[N: static[int], M: static[int], T: SomeNumber](matrix: Matrix[N, M, T]
 
 func toString*[N, M, T](matrix: Matrix[N, M, T]): string =
     result = "Matrix"
-    if N == M:
-        result &= $N
+    when N == M:
+        result.add $N
     else:
-        result &= "[" & $N & "x" & $M & "]"
+        result.add "[" & $N & "x" & $M & "]"
     if T isnot float:
-        result &= T.name
-    result &= "("
+        result.add T.name
+    result.add "("
     for i in 0 ..< M:
         result &= $matrix[i]
         if i != M - 1:
-            result &= ", "
-    result &= ")"
+            result.add ", "
+    result.add ")"
 template `$`*(matrix: Matrix): string = matrix.toString()
 
 

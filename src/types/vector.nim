@@ -42,28 +42,27 @@ func newVector*[N: static[int], T: SomeNumber](args: varargs[T]): Vector[N, T] =
             result[i] = v
 
 
-template newVector2*(): Vector = newVector[2, float]()
-template newVector2*(c: float): Vector = newVector[2, float](c)
-template newVector2*(x, y: float): Vector = newVector[2, float](x, y)
-template newVector2int*(): Vector = newVector[2, int]()
-template newVector2int*(c: int): Vector = newVector[2, int](c)
-template newVector2int*(x, y: int): Vector = newVector[2, int](x, y)
-template newVector3*(): Vector = newVector[3, float]()
-template newVector3*(c: float): Vector = newVector[3, float](c)
-template newVector3*(x, y, z: float): Vector = newVector[3, float](x, y, z)
-template newVector3int*(): Vector = newVector[3, int]()
-template newVector3int*(c: int): Vector = newVector[3, int](c)
-template newVector3int*(x, y, z: int): Vector = newVector[3, int](x, y, z)
-template newVector4*(): Vector = newVector[4, float]()
-template newVector4*(c: float): Vector = newVector[4, float](c)
-template newVector4*(x, y, z, w: float): Vector = newVector[4, float](x, y, z, w)
-template newVector4int*(): Vector = newVector[4, int]()
-template newVector4int*(c: int): Vector = newVector[4, int](c)
-template newVector4int*(x, y, z, w: int): Vector = newVector[4, int](x, y, z, w)
+func newVector2*(): Vector2 = newVector[2, float]()
+func newVector2*(c: float): Vector2 = newVector[2, float](c)
+func newVector2*(x, y: float): Vector2 = newVector[2, float](x, y)
+func newVector2int*(): Vector2int = newVector[2, int]()
+func newVector2int*(c: int): Vector2int = newVector[2, int](c)
+func newVector2int*(x, y: int): Vector2int = newVector[2, int](x, y)
+func newVector3*(): Vector3 = newVector[3, float]()
+func newVector3*(c: float): Vector3 = newVector[3, float](c)
+func newVector3*(x, y, z: float): Vector3 = newVector[3, float](x, y, z)
+func newVector3int*(): Vector3int = newVector[3, int]()
+func newVector3int*(c: int): Vector3int = newVector[3, int](c)
+func newVector3int*(x, y, z: int): Vector3int = newVector[3, int](x, y, z)
+func newVector4*(): Vector4 = newVector[4, float]()
+func newVector4*(c: float): Vector4 = newVector[4, float](c)
+func newVector4*(x, y, z, w: float): Vector4 = newVector[4, float](x, y, z, w)
+func newVector4int*(): Vector4int = newVector[4, int]()
+func newVector4int*(c: int): Vector4int = newVector[4, int](c)
+func newVector4int*(x, y, z, w: int): Vector4int = newVector[4, int](x, y, z, w)
 when defined(typeN):
-    # Don't know why template is not work
-    func newVectorN*[N: static[int]](args: varargs[float]): Vector[N, float] = newVector[N, float](args)
-    func newVectorNint*[N: static[int]](args: varargs[int]): Vector[N, int] = newVector[N, int](args)
+    func newVectorN*[N: static[int]](args: varargs[float]): VectorN[N] = newVector[N, float](args)
+    func newVectorNint*[N: static[int]](args: varargs[int]): VectorNint[N] = newVector[N, int](args)
 
 ## Arithmetic Operations
 template `+`*(a: Vector): Vector = a
@@ -180,5 +179,5 @@ func toString*[N, T](vector: Vector[N, T]): string =
             result.add $vector[i]
         result.add ", "
     result.removeSuffix ", "
-    result &= ")"
+    result.add ")"
 template `$`*(vector: Vector): string = vector.toString()

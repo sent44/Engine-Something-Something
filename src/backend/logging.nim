@@ -136,7 +136,7 @@ template `?`*[T: tuple | object | ref object](obj: T): string =
 # TODO Make it more than just print
 proc log*(level: LoggingLevel, info: tuple[filename: string,line: int, column: int], args: varargs[LoggingObj]) = 
     let time = getTime().toUnix
-    write(stdout, "[" & $time & "] " & info.filename & ":" & $info.line & " ")
+    write(stdout, "[" & $time & "] " & info.filename & ":" & $info.line & " - ")
     for arg in args:
         write(stdout, arg.text)
     write(stdout, "\n")
