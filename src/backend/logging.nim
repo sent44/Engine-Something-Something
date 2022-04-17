@@ -83,43 +83,22 @@ template `?`*[T: tuple | object | ref object](obj: T): string =
     else:
         expandObjectString(obj)
 
-# Forward declare override just for below function
-func toRefString[T: ref object](obj: T, recursiveCount: int = 0): string 
-# Override build-in `$` for object toString 
-func toString[T: tuple | object](obj: T, recursiveCount: int = 0): string =
-    when T is tuple:
-        result.add "tuple"
-    else:
-        result.add "obj."
-        result.add T.name
-    result.add "("
-    for k, v in obj.fieldPairs:
-        when T isnot tuple:
-            result.add k & ": "
-        when v is string:
-            result.add v
-        elif v is object or v is ref object or v is tuple:
-            result.add toString(v, recursiveCount + 1)
+when defined(debug) or defined(enableLogging):
+    # Forward declare override just for below function
+    func toRefString[T: ref object](obj: T, recursiveCount: int = 0): string 
+    # Override build-in `$` for object toString 
+    func toString[T: tuple | object](obj: T, recursiveCount: int = 0): string =
+        when T is tuple:
+            result.add "tuple"
         else:
-            result.add $v
-        result.add ", "
-    result.removeSuffix ", "
-    result.add ")"
-func toRefString[T: ref object](obj: T, recursiveCount: int = 0): string =
-    if obj.isNil:
-        result = "nil"
-    else:
-        result.add "obj*."
-        var name = T.name
-        name.removePrefix "ref "
-        result.add name
+            result.add "obj."
+            result.add T.name
         result.add "("
-        for k, v in fieldPairs(obj[]):
-            result.add k & ": "
+        for k, v in obj.fieldPairs:
+            when T isnot tuple:
+                result.add k & ": "
             when v is string:
                 result.add v
-            elif v is ref object:
-                result.add toRefString(v, recursiveCount + 1)
             elif v is object or v is ref object or v is tuple:
                 result.add toString(v, recursiveCount + 1)
             else:
@@ -127,6 +106,28 @@ func toRefString[T: ref object](obj: T, recursiveCount: int = 0): string =
             result.add ", "
         result.removeSuffix ", "
         result.add ")"
+    func toRefString[T: ref object](obj: T, recursiveCount: int = 0): string =
+        if obj.isNil:
+            result = "nil"
+        else:
+            result.add "obj*."
+            var name = T.name
+            name.removePrefix "ref "
+            result.add name
+            result.add "("
+            for k, v in fieldPairs(obj[]):
+                result.add k & ": "
+                when v is string:
+                    result.add v
+                elif v is ref object:
+                    result.add toRefString(v, recursiveCount + 1)
+                elif v is object or v is ref object or v is tuple:
+                    result.add toString(v, recursiveCount + 1)
+                else:
+                    result.add $v
+                result.add ", "
+            result.removeSuffix ", "
+            result.add ")"
 
 
 when defined(debug) or defined(enableLogging):
