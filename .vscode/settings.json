@@ -8,6 +8,8 @@
         "astGenRepr",
         "bitops",
         "CatchableError",
+        "cint",
+        "cstring",
         "dynamicbase",
         "dynlibOverride",
         "elif",

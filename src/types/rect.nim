@@ -119,5 +119,5 @@ template `$`*(rect: Rect): string = rect.toString()
 # let aaa = [3, 4, 5]
 # test(aaa)
 
-echo newRect[2, float](4.0, 5.0, -6.0, -7.0).abs()
+# echo newRect[2, float](4.0, 5.0, -6.0, -7.0).abs()
 # echo newRect[2, int](newVector2int(3, 5), newVector2int(7, 9))

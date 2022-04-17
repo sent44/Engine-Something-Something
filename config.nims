@@ -9,7 +9,7 @@ put "enableTypeN", "yes"
 
 # Should not config these
 switch "import", "src/backend/enginefunc"
-# switch "threads", "on"
+switch "threads", "on"
 switch "showAllMismatches", "on"
 switch "path", "src/"
 
