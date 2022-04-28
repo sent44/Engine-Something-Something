@@ -1,4 +1,3 @@
-# import std/math
 import std/bitops
 
 # Ceil from std/math is not work
@@ -23,8 +22,8 @@ func allTrue*(arr: var BitArray): void =
     for i in arr.len:
         arr[i] = true
 func allFalse*[N](arr: var BitArray[N]): void =
-    var a: BitArray[N]
-    arr = a
+    for i in arr.len:
+        arr[i] = false
 
 iterator items*[N](arr: BitArray[N]): bool =
     for i in arr.len:

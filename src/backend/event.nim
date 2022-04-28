@@ -1,5 +1,5 @@
 type EventChannel* = enum
-    WindowQuit, EngineQuit
+    WindowQuit, EngineStopRunning
 
 
 type

@@ -44,6 +44,7 @@ when defined(typeN):
     template newMatrixN*[N: static[int]](args: varargs[Vector[N, float]]): Matrix = newMatrix[N, N, float](args)
     template newMatrixNint*[N: static[int]](args: varargs[Vector[N, int]]): Matrix = newMatrix[N, N, int](args)
 
+## Arithmetic Operations
 # sizeC function is for that don't have to pass generic type 
 func sizeC[N, M, T](matrix: Matrix[N, M, T]): int = M
 
@@ -73,6 +74,19 @@ func `*`*[N1, M1, N2, M2, T](a: Matrix[N1, M1, T], b: Matrix[N2, M2, T]): Matrix
 template `*=`*[N, T](a: var Matrix[N, N, T], b: Matrix[N, N, T]): void = a = a * b
 
 
+## Comparison Operations
+func `==`*[N, M, T](a, b: Matrix[N, M, T]): bool =
+    array[M, Vector[N, T]](a) == array[M, Vector[N, T]](b)
+func almostEqual*[N, M, T](a, b: Matrix[N, M, T]): bool =
+    for i in M:
+        if not array[M, Vector[N, T]](a)[i].almostEqual(array[M, Vector[N, T]](b)[i]):
+            return false
+    return true
+template `==?`*[N, M, T](a, b: Matrix[N, M, T]): bool = a.almostEqual(b)
+template `!=?`*[N, M, T](a, b: Matrix[N, M, T]): bool = not a.almostEqual(b)
+
+
+## Other Operations
 func castTo*(`from`: Matrix, to_type: typedesc): to_type =
     if toType.genericHead isnot Matrix.genericHead:
         raise newException(CatchableError, "Error, cannot cast to non Matrix.")
@@ -109,12 +123,3 @@ func toString*[N, M, T](matrix: Matrix[N, M, T]): string =
             result.add ", "
     result.add ")"
 template `$`*(matrix: Matrix): string = matrix.toString()
-
-
-# echo newMatrix[3, 2, float](newVector3(3.0, 2.0, 5.0), newVector3(1.0, 4.0, 6.0)).castTo(Matrix[2, 2, int])
-# echo newMatrix[5, 5, int](newVector[5, int](25, 24, 23, 22, 21), newVector[5, int](70, 89, 16, 35, 42), newVector[5, int](50, 51, 52, 53, 54), newVector[5, int](49, 63, 72, 81, 90), newVector[5, int](14, 13, 12, 13, 14)).det()
-# echo newMatrix[3, 2, int](newVector3int(1, 2, 3), newVector3int(4, 5, 6)) * newMatrix[2, 3, int](newVector2int(7, 8), newVector2int(9, 10), newVector2int(11, 12))
-# echo newMatrix[3, 1,int](newVector3int(3, 4, 2)) * newMatrix[4, 3, int](newVector4int(13, 9, 7, 15), newVector4int(8, 7, 4, 6), newVector4int(6, 4, 0, 3))
-# echo newMatrix[1, 3, int](newVector[1, int](4), newVector[1, int](5), newVector[1, int](6)) * newMatrix[3, 1, int](newVector3int(1, 2, 3))
-# echo newMatrix[3, 1, int](newVector3int(1, 2, 3)) * newMatrix[1, 3, int](newVector[1, int](4), newVector[1, int](5), newVector[1, int](6))
-# echo newMatrix2(newVector2(3.3, 4.5), newVector2(6.8, 8.1))
