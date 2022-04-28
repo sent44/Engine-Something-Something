@@ -25,10 +25,10 @@ template createWindow*(title: string, position, size: Vector2int): Window =
 template createWindow*(title: string, rect: Rect2int): Window =
     createWindow(title, rect.position.x, rect.position.y, rect.size.x, rect.size.y)
 
-func destroyWindow*(window: Window) =
+func destroyWindow*(window: Window): void =
     sdl2.destroyWindow(window.window)
 
-proc pollWindowEvent*() =
+proc pollWindowEvent*(): void =
     var event: sdl2.Event = sdl2.defaultEvent
     while sdl2.pollEvent(event):
         case event.kind:

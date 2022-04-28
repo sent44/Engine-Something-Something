@@ -1,28 +1,28 @@
 import std/strutils
 
 ## Configurations
-
 put "binName", "engine"
 put "debug", "no"
 put "enableTypeN", "yes"
-
 
 # Should not config these
 switch "import", "src/backend/enginefunc"
 switch "threads", "on"
 switch "showAllMismatches", "on"
 switch "path", "src/"
-
 # switch "define", "nimPreviewSlimSystem"
+
 
 var disableConfigHint = true
 var outBin = false
 var enableMWindow = false
 var importLogging = true
+var debug = true
 
 ## Tasks
 task beforeBuild, "":
     enableMWindow = true
+    debug = false
     switch "dynlibOverride", "libSDL2"
     switch "passL", "-static -lmingw32 -lSDL2main -lSDL2 -Wl,--no-undefined -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid"
     
@@ -33,6 +33,10 @@ task beforeBuild, "":
         else:
             raise newException(CatchableError, "NO")
     
+    if get("debug") == "yes":
+        debug = true
+
+
     disableConfigHint = false
     outBin = true
 
@@ -94,17 +98,18 @@ task vscodeBuildDebug, "":
 
 ## Conditional configurations
 
-# Both NimScript and anything in tests/ are angry at --import `Logging` for some reason
-# While NimScript error is not really a problem, tests/ script are
+# Both NimScript and anything in tests/ are angry at import `Logging` for some reason
+# While NimScript error is not really a problem, tests/ script is
 if not defined(testing) and importLogging:
     switch "import", "src/backend/logging"
 
 # `-mwindows` is making print log disappear :(
-if not(exists("debug") and get("debug") == "yes"):
+if debug or defined(debug):
     if enableMWindow:
         switch "passL", "-mwindows"
 else:
     # Might be able to pass `--define:debug` in command instant of `debug=yes`
+    # So if `debug=yes` but not `--define:debug` then set it
     if not defined(debug):
         switch "define", "debug"
 
